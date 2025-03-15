@@ -1,4 +1,4 @@
-# agent.py
+# WritingAssistantAgent.py
 import os
 from dotenv import load_dotenv
 from openai import OpenAI
@@ -72,7 +72,7 @@ class WritingAssistant:
             "tokens_used": response.usage.total_tokens
         }
 
-    def research_topic(self, topic: str) -> dict:
+    def research_topic(self, text: str) -> dict:
         """Research and provide information about a topic."""
         prompt = f"""
         Please provide key information about the following topic:
@@ -81,7 +81,7 @@ class WritingAssistant:
         3. Useful examples
         4. Potential writing angles
 
-        Topic: {topic}
+        Topic: {text}
         """
         
         response = self.client.chat.completions.create(
