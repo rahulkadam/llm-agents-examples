@@ -48,22 +48,12 @@ class WritingAssistant:
         }
 
     def improve_writing(self, text: str) -> dict:
-        """Suggest improvements for the given text."""
-        prompt = f"""
-        Please suggest improvements for the following text:
-        1. Grammar and clarity
-        2. Sentence structure
-        3. Word choice
-        4. Overall flow
-
-        Text: {text}
-        """
-        
+        """Improve the given text, considering any context provided."""
         response = self.client.chat.completions.create(
             model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are a professional editor."},
-                {"role": "user", "content": prompt}
+                {"role": "system", "content": "You are a writing assistant that helps improve sentences while maintaining context and flow. Provide clear, concise improvements."},
+                {"role": "user", "content": text}
             ]
         )
         

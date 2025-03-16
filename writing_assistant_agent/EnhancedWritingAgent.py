@@ -7,11 +7,7 @@ from typing import Dict, List, Any
 class EnhancedWritingAgent:
     def __init__(self):
         load_dotenv()
-        base_url = os.getenv("OPENAI_API_BASE_URL")
-        self.client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            base_url=base_url if base_url else None
-        )
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         
         self.capabilities = {
             "deep_analysis": "Perform in-depth content analysis",
@@ -21,29 +17,27 @@ class EnhancedWritingAgent:
             "content_summarization": "Create concise summaries of longer text"
         }
 
-    def deep_analysis(self, text: str) -> Dict[str, Any]:
-        """Perform comprehensive analysis of the text."""
+    def deep_analysis(self, text: str) -> dict:
+        """Provide enhanced analysis and improvements."""
         prompt = f"""
-        Perform a deep analysis of the following text, including:
-        1. Main themes and ideas
-        2. Writing style characteristics
-        3. Emotional impact and tone
-        4. Structure and organization
-        5. Target audience suitability
-        6. Persuasiveness and effectiveness
-        7. Areas for improvement
+        Based on the previous analysis and context, provide enhanced improvements focusing on:
+        1. Clarity and impact
+        2. Natural flow with context
+        3. Specific word choices
+        4. Overall effectiveness
 
-        Text: {text}
+        Input:
+        {text}
         """
-        
+
         response = self.client.chat.completions.create(
-            model="gpt-4",  # Using GPT-4 for better analysis
+            model="gpt-3.5-turbo",
             messages=[
-                {"role": "system", "content": "You are an expert writing analyst with deep understanding of various writing styles and techniques."},
+                {"role": "system", "content": "You are an advanced writing enhancement agent that provides deep, thoughtful improvements while maintaining the author's intent."},
                 {"role": "user", "content": prompt}
             ]
         )
-        
+
         return {
             "analysis": response.choices[0].message.content,
             "tokens_used": response.usage.total_tokens

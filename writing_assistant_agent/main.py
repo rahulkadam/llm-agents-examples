@@ -2,133 +2,176 @@
 from WritingAssistantAgent import WritingAssistant
 from EnhancedWritingAgent import EnhancedWritingAgent
 from ContextAwareAgent import ContextAwareAgent
+import json
+import os
+from datetime import datetime
+
+class WritingSession:
+    def __init__(self):
+        # Initialize all agents
+        self.basic_agent = WritingAssistant()
+        self.enhanced_agent = EnhancedWritingAgent()
+        self.context_agent = ContextAwareAgent()
+        self.history = []
+        self.load_history()  # Load history when starting
+
+    def load_history(self):
+        """Load conversation history from JSON files"""
+        if not os.path.exists("context_history"):
+            return
+
+        # Get all JSON files and sort by timestamp
+        files = []
+        for f in os.listdir("context_history"):
+            if f.endswith(".json"):
+                timestamp = f.split("_")[1].split(".")[0]  # Extract timestamp from filename
+                files.append((timestamp, f))
+        
+        # Sort files by timestamp
+        files.sort(key=lambda x: x[0])
+        
+        # Load each file into history
+        for _, filename in files:
+            try:
+                with open(os.path.join("context_history", filename), 'r') as f:
+                    entry = json.load(f)
+                    self.history.append(entry)
+            except Exception as e:
+                print(f"Error loading {filename}: {e}")
+
+        print(f"Loaded {len(self.history)} previous conversations from storage.")
+
+    def add_to_history(self, entry):
+        """Add an entry to history with both prompt and result"""
+        self.history.append(entry)
+        self.save_to_storage(entry)
+
+    def save_to_storage(self, entry):
+        """Save history entry to storage"""
+        if not os.path.exists("context_history"):
+            os.makedirs("context_history")
+        
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"context_history/entry_{timestamp}.json"
+        
+        with open(filename, 'w') as f:
+            json.dump(entry, f, indent=2)
+
+    def get_conversation_history(self):
+        """Get formatted conversation history for context"""
+        if not self.history:
+            return "No previous context available."
+        
+        history_text = "Previous conversation:\n"
+        for entry in self.history[-3:]:  # Last 3 interactions
+            history_text += f"\nPrompt: {entry['prompt']}\n"
+            history_text += f"Response: {entry['response']}\n"
+            if 'improvements' in entry:
+                history_text += f"Improvements: {entry['improvements']}\n"
+        return history_text
+
+    def process_with_agents(self, prompt: str) -> dict:
+        """Process prompt through all agents in sequence"""
+        # Get conversation history
+        conversation_history = self.get_conversation_history()
+
+        # 1. Context agent processes with full history
+        context_result = self.context_agent.process_with_context(
+            prompt,
+            conversation_history
+        )
+
+        # 2. Basic agent analyzes with context
+        basic_result = self.basic_agent.improve_writing(
+            f"""
+Previous conversation:
+{conversation_history}
+
+Current prompt:
+{prompt}
+
+Context analysis:
+{context_result['context_analysis']}
+
+Please provide improvements while maintaining consistency with previous conversation.
+"""
+        )
+
+        # 3. Enhanced agent provides final improvements
+        enhanced_result = self.enhanced_agent.deep_analysis(
+            f"""
+Conversation history:
+{conversation_history}
+
+Current prompt:
+{prompt}
+
+Context analysis:
+{context_result['context_analysis']}
+
+Basic improvements:
+{basic_result['suggestions']}
+
+Please provide enhanced improvements while maintaining conversation flow.
+"""
+        )
+
+        # Store the complete interaction
+        self.add_to_history({
+            "prompt": prompt,
+            "context_analysis": context_result['context_analysis'],
+            "improvements": basic_result['suggestions'],
+            "response": enhanced_result['analysis'],
+            "timestamp": datetime.now().isoformat()
+        })
+
+        return {
+            "context_analysis": context_result['context_analysis'],
+            "basic_improvements": basic_result['suggestions'],
+            "enhanced_analysis": enhanced_result['analysis']
+        }
 
 def main():
-    # Initialize all agents
-    basic_agent = WritingAssistant()
-    enhanced_agent = EnhancedWritingAgent()
-    context_agent = ContextAwareAgent()
+    session = WritingSession()
 
     while True:
-        print("\nWriting Assistant Menu:")
-        print("1. Basic Analysis")
-        print("2. Enhanced Analysis")
-        print("3. Style Transfer")
-        print("4. Context-Aware Generation")
-        print("5. Complete Writing Workflow (Chained)")
-        print("6. Research and Enhance (Chained)")
-        print("7. Quit")
+        print("\n" + "="*50)
+        if session.history:
+            print("\nPrevious conversation:")
+            for entry in session.history[-3:]:
+                print(f"\nYou: {entry['prompt']}")
+                print(f"Assistant: {entry['response']}")
         
-        choice = input("\nEnter your choice (1-7): ")
+        print("\nOptions:")
+        print("1. Enter prompt")
+        print("2. Quit")
         
-        if choice == "7":
+        choice = input("\nChoice: ")
+        
+        if choice == "2":
             print("Goodbye!")
             break
             
-        if choice in ["1", "2", "3"]:
-            text = input("\nEnter the text you want to analyze/modify: ")
+        if choice == "1":
+            prompt = input("\nEnter your prompt: ")
             
-            if choice == "1":
-                print("\nBasic Analysis")
-                print("-" * 50)
-                result = basic_agent.analyze_text(text)
-                print(result["analysis"])
-                
-            elif choice == "2":
-                print("\nEnhanced Analysis")
-                print("-" * 50)
-                result = enhanced_agent.deep_analysis(text)
-                print(result["analysis"])
-                
-            elif choice == "3":
-                style = input("Enter target style (e.g., casual, formal, technical): ")
-                print(f"\nStyle Transfer (to {style})")
-                print("-" * 50)
-                result = enhanced_agent.style_transfer(text, style)
-                print(result["adapted_text"])
-                
-        elif choice == "4":
-            query = input("\nEnter your question or topic: ")
-            print("\nContext-Aware Generation")
+            print("\nProcessing with conversation history...")
+            results = session.process_with_agents(prompt)
+            
+            print("\nContext Analysis:")
             print("-" * 50)
-            result = context_agent.generate_with_context(query)
-            print(result["response"])
-            print(f"Number of contexts used: {result['contexts_used']}")
-
-        elif choice == "5":
-            # Complete Writing Workflow: Analysis -> Improvement -> Style Transfer
-            text = input("\nEnter your text: ")
-            target_style = input("Enter desired style (e.g., casual, formal, technical): ")
+            print(results['context_analysis'])
             
-            print("\n1. Basic Analysis")
+            print("\nSuggested Improvements:")
             print("-" * 50)
-            basic_result = basic_agent.analyze_text(text)
-            print(basic_result["analysis"])
+            print(results['basic_improvements'])
             
-            print("\n2. Enhanced Analysis and Suggestions")
+            print("\nEnhanced Response:")
             print("-" * 50)
-            enhanced_result = enhanced_agent.deep_analysis(text)
-            print(enhanced_result["analysis"])
-            
-            print("\n3. Improving Writing")
-            print("-" * 50)
-            improved_result = basic_agent.improve_writing(text)
-            print(improved_result["suggestions"])
-            
-            print("\n4. Style Transfer")
-            print("-" * 50)
-            style_result = enhanced_agent.style_transfer(text, target_style)
-            print(style_result["adapted_text"])
-            
-            # Store the workflow results in context
-            context_agent.context_storage.store_context({
-                "original_text": text,
-                "analysis": basic_result["analysis"],
-                "enhanced_analysis": enhanced_result["analysis"],
-                "improvements": improved_result["suggestions"],
-                "style_transfer": style_result["adapted_text"]
-            }, "complete_workflow")
-
-        elif choice == "6":
-            # Research and Enhance: Research -> Context -> Enhanced Writing
-            topic = input("\nEnter the topic you want to research and write about: ")
-            
-            print("\n1. Initial Research")
-            print("-" * 50)
-            research_result = basic_agent.research_topic(topic)
-            print(research_result["research"])
-            
-            print("\n2. Context-Aware Analysis")
-            print("-" * 50)
-            context_result = context_agent.generate_with_context(topic)
-            print(context_result["response"])
-            
-            # Combine research and context for enhanced writing
-            combined_text = f"""
-            Research findings:
-            {research_result['research']}
-            
-            Additional context:
-            {context_result['response']}
-            """
-            
-            print("\n3. Enhanced Analysis of Combined Information")
-            print("-" * 50)
-            enhanced_result = enhanced_agent.deep_analysis(combined_text)
-            print(enhanced_result["analysis"])
-            
-            # Store the research workflow in context
-            context_agent.context_storage.store_context({
-                "topic": topic,
-                "research": research_result["research"],
-                "context_analysis": context_result["response"],
-                "enhanced_analysis": enhanced_result["analysis"]
-            }, "research_workflow")
+            print(results['enhanced_analysis'])
             
         else:
             print("Invalid choice. Please try again.")
-        
-        input("\nPress Enter to continue...")
 
 if __name__ == "__main__":
     main()

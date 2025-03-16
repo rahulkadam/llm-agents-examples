@@ -9,11 +9,7 @@ from ContextStorageAgent import ContextStorageAgent
 class ContextAwareAgent:
     def __init__(self, storage_dir: str = "context_storage"):
         load_dotenv()
-        base_url = os.getenv("OPENAI_API_BASE_URL")
-        self.client = OpenAI(
-            api_key=os.getenv("OPENAI_API_KEY"),
-            base_url=base_url if base_url else None
-        )
+        self.client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
         self.context_storage = ContextStorageAgent(storage_dir)
         
     def _load_context(self, filename: str) -> Dict[str, Any]:
@@ -93,3 +89,34 @@ class ContextAwareAgent:
         })
         
         return result 
+
+    def process_with_context(self, prompt: str, conversation_history: str) -> dict:
+        """Process a prompt with conversation history."""
+        analysis_prompt = f"""
+        Previous conversation:
+        {conversation_history}
+
+        New prompt:
+        {prompt}
+
+        Please analyze:
+        1. How this prompt relates to the previous conversation
+        2. Key themes and patterns in the conversation
+        3. Suggestions for maintaining consistency
+        4. Potential improvements for better flow
+
+        Provide a concise analysis that will help improve the response while maintaining context.
+        """
+
+        response = self.client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[
+                {"role": "system", "content": "You are a context-aware writing assistant that helps maintain conversation flow and coherence. Focus on the relationship between the current prompt and previous conversation."},
+                {"role": "user", "content": analysis_prompt}
+            ]
+        )
+
+        return {
+            "context_analysis": response.choices[0].message.content,
+            "tokens_used": response.usage.total_tokens
+        } 
