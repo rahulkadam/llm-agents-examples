@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Writing Assistant</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .response {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 4px;
+            white-space: pre-wrap;
+        }
+        .history {
+            margin-top: 30px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Writing Assistant</h1>
+        <div>
+            <h3>Enter your text:</h3>
+            <textarea id="prompt" placeholder="Type your text here..."></textarea>
+            <button onclick="processPrompt()">Process</button>
+        </div>
+        <div>
+            <h3>Response:</h3>
+            <div id="response" class="response"></div>
+        </div>
+        <div class="history">
+            <h3>Conversation History:</h3>
+            <div id="history"></div>
+        </div>
+    </div>
+
+    <script>
+        async function processPrompt() {
+            const prompt = document.getElementById('prompt').value;
+            try {
+                const response = await fetch('/api/writing/process', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'text/plain'
+                    },
+                    body: prompt
+                });
+                const result = await response.json();
+                displayResult(result);
+                loadHistory();
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('response').textContent = 'Error processing request';
+            }
+        }
+
+        function displayResult(result) {
+            const responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = `
+                <strong>Context Analysis:</strong>
+                <pre>${result.contextAnalysis}</pre>
+                <strong>Improvements:</strong>
+                <pre>${result.improvements}</pre>
+                <strong>Final Response:</strong>
+                <pre>${result.response}</pre>
+            `;
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/writing/history');
+                const history = await response.json();
+                const historyDiv = document.getElementById('history');
+                historyDiv.innerHTML = history.map(entry => `
+                    <div class="response" style="margin-bottom: 10px;">
+                        <strong>Prompt:</strong> ${entry.prompt}<br>
+                        <strong>Response:</strong> ${entry.response}<br>
+                        <small>Time: ${new Date(entry.timestamp).toLocaleString()}</small>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading history:', error);
+            }
+        }
+
+        // Load history on page load
+        loadHistory();
+    </script>
+</body>
+</html> 

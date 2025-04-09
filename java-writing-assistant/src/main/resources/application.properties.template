@@ -1,0 +1,3 @@
+# OpenAI API Configuration
+openai.api.key=your-api-key-here
+openai.api.base-url=your-base-url-here 
