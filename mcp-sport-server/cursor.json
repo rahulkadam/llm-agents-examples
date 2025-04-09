@@ -1,0 +1,18 @@
+{
+  "name": "IPL Cricket Project",
+  "version": "1.0.0",
+  "description": "IPL Cricket project with MCP server integration",
+  "contextServers": [
+    {
+      "name": "IPL Cricket MCP",
+      "type": "mcp",
+      "configFile": "mcp-config.json",
+      "enabled": true
+    }
+  ],
+  "settings": {
+    "autoConnect": true,
+    "defaultLanguage": "en",
+    "responseFormat": "JSON"
+  }
+} 

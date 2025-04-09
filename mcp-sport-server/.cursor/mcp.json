@@ -1,0 +1,40 @@
+{
+  "mcpServers": {
+    "iplCricket": {
+      "name": "IPL Cricket MCP",
+      "type": "mcp",
+      "url": "http://localhost:8080/api/v1/context",
+      "endpoints": {
+        "search": {
+          "path": "/search",
+          "method": "GET",
+          "parameters": {
+            "query": {
+              "type": "string",
+              "required": true
+            },
+            "limit": {
+              "type": "integer",
+              "default": 10
+            }
+          }
+        },
+        "query": {
+          "path": "/query",
+          "method": "POST",
+          "parameters": {
+            "contextType": {
+              "type": "string",
+              "required": true,
+              "enum": ["SEARCH", "TEAM", "PLAYER", "MATCH", "SEASON"]
+            },
+            "contextId": {
+              "type": "string",
+              "required": true
+            }
+          }
+        }
+      }
+    }
+  }
+} 

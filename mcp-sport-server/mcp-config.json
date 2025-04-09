@@ -1,0 +1,142 @@
+{
+  "name": "IPL Cricket MCP Server",
+  "version": "1.0.0",
+  "description": "Model Context Server for IPL Cricket providing rich context about teams, players, and matches",
+  "baseUrl": "http://localhost:8080/api/v1/context",
+  "endpoints": [
+    {
+      "name": "search",
+      "path": "/search",
+      "method": "GET",
+      "description": "Search across all IPL cricket contexts",
+      "parameters": [
+        {
+          "name": "query",
+          "type": "string",
+          "required": true,
+          "description": "Search term to find teams, players, or matches"
+        },
+        {
+          "name": "limit",
+          "type": "integer",
+          "required": false,
+          "default": 10,
+          "description": "Maximum number of results to return"
+        },
+        {
+          "name": "format",
+          "type": "string",
+          "required": false,
+          "default": "JSON",
+          "description": "Response format (JSON)"
+        },
+        {
+          "name": "language",
+          "type": "string",
+          "required": false,
+          "default": "en",
+          "description": "Preferred language for responses"
+        }
+      ],
+      "response": {
+        "type": "object",
+        "properties": {
+          "contextType": "SEARCH",
+          "data": {
+            "query": "string",
+            "limit": "integer"
+          },
+          "relationships": {
+            "teams": "array",
+            "players": "array",
+            "matches": "array"
+          },
+          "statistics": {
+            "totalTeamsFound": "integer",
+            "totalPlayersFound": "integer",
+            "totalMatchesFound": "integer"
+          }
+        }
+      }
+    },
+    {
+      "name": "query",
+      "path": "/query",
+      "method": "POST",
+      "description": "Query IPL cricket context with specific parameters",
+      "requestBody": {
+        "type": "object",
+        "required": ["contextType", "contextId"],
+        "properties": {
+          "contextType": {
+            "type": "string",
+            "enum": ["SEARCH", "TEAM", "PLAYER", "MATCH", "SEASON"],
+            "description": "Type of context to query"
+          },
+          "contextId": {
+            "type": "string",
+            "description": "Identifier for the context (e.g., team ID, player ID, search term)"
+          },
+          "parameters": {
+            "type": "object",
+            "description": "Additional parameters for the query"
+          },
+          "format": {
+            "type": "string",
+            "default": "JSON",
+            "description": "Response format"
+          },
+          "language": {
+            "type": "string",
+            "default": "en",
+            "description": "Preferred language for responses"
+          }
+        }
+      },
+      "response": {
+        "type": "object",
+        "properties": {
+          "contextType": "string",
+          "contextId": "string",
+          "data": "object",
+          "relationships": "object",
+          "statistics": "object",
+          "naturalLanguageSummary": "string",
+          "suggestedQueries": "array",
+          "relatedContexts": "array"
+        }
+      }
+    }
+  ],
+  "examples": [
+    {
+      "name": "Search for Mumbai Indians",
+      "endpoint": "search",
+      "request": {
+        "query": "Mumbai",
+        "limit": 5
+      }
+    },
+    {
+      "name": "Get Team Details",
+      "endpoint": "query",
+      "request": {
+        "contextType": "TEAM",
+        "contextId": "1",
+        "format": "JSON",
+        "language": "en"
+      }
+    },
+    {
+      "name": "Search for Batsmen",
+      "endpoint": "query",
+      "request": {
+        "contextType": "SEARCH",
+        "contextId": "BATSMAN",
+        "parameters": {
+          "limit": 10
+        }
+      }
+    }
+  ]
+} 

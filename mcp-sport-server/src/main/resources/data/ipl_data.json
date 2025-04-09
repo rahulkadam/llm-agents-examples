@@ -1,0 +1,196 @@
+{
+  "teams": [
+    {
+      "id": 1,
+      "name": "Mumbai Indians",
+      "city": "Mumbai",
+      "homeGround": "Wankhede Stadium",
+      "teamColor": "#004BA0",
+      "logoUrl": "https://example.com/mi-logo.png"
+    },
+    {
+      "id": 2,
+      "name": "Chennai Super Kings",
+      "city": "Chennai",
+      "homeGround": "M. A. Chidambaram Stadium",
+      "teamColor": "#FFFF3C",
+      "logoUrl": "https://example.com/csk-logo.png"
+    },
+    {
+      "id": 3,
+      "name": "Royal Challengers Bangalore",
+      "city": "Bangalore",
+      "homeGround": "M. Chinnaswamy Stadium",
+      "teamColor": "#000000",
+      "logoUrl": "https://example.com/rcb-logo.png"
+    },
+    {
+      "id": 4,
+      "name": "Kolkata Knight Riders",
+      "city": "Kolkata",
+      "homeGround": "Eden Gardens",
+      "teamColor": "#2E0854",
+      "logoUrl": "https://example.com/kkr-logo.png"
+    }
+  ],
+  "players": [
+    {
+      "id": 1,
+      "name": "Rohit Sharma",
+      "dateOfBirth": "1987-04-30",
+      "role": "BATSMAN",
+      "battingStyle": "RIGHT_HANDED",
+      "bowlingStyle": "RIGHT_ARM_OFFBREAK",
+      "teamId": 1,
+      "jerseyNumber": 45,
+      "nationality": "Indian",
+      "photoUrl": "https://example.com/rohit-sharma.png"
+    },
+    {
+      "id": 2,
+      "name": "MS Dhoni",
+      "dateOfBirth": "1981-07-07",
+      "role": "WICKETKEEPER",
+      "battingStyle": "RIGHT_HANDED",
+      "bowlingStyle": "RIGHT_ARM_MEDIUM",
+      "teamId": 2,
+      "jerseyNumber": 7,
+      "nationality": "Indian",
+      "photoUrl": "https://example.com/ms-dhoni.png"
+    },
+    {
+      "id": 3,
+      "name": "Virat Kohli",
+      "dateOfBirth": "1988-11-05",
+      "role": "BATSMAN",
+      "battingStyle": "RIGHT_HANDED",
+      "bowlingStyle": "RIGHT_ARM_MEDIUM",
+      "teamId": 3,
+      "jerseyNumber": 18,
+      "nationality": "Indian",
+      "photoUrl": "https://example.com/virat-kohli.png"
+    },
+    {
+      "id": 4,
+      "name": "Andre Russell",
+      "dateOfBirth": "1988-04-29",
+      "role": "ALL_ROUNDER",
+      "battingStyle": "RIGHT_HANDED",
+      "bowlingStyle": "RIGHT_ARM_FAST",
+      "teamId": 4,
+      "jerseyNumber": 12,
+      "nationality": "West Indian",
+      "photoUrl": "https://example.com/andre-russell.png"
+    }
+  ],
+  "matches": [
+    {
+      "id": 1,
+      "matchDateTime": "2024-03-23T19:30:00",
+      "venue": "Wankhede Stadium",
+      "season": "IPL 2024",
+      "matchNumber": "Match 1",
+      "team1Id": 1,
+      "team2Id": 2,
+      "status": "COMPLETED",
+      "team1Score": 185,
+      "team1Wickets": 6,
+      "team1Overs": 20.0,
+      "team2Score": 190,
+      "team2Wickets": 4,
+      "team2Overs": 19.2,
+      "matchWinnerId": 2
+    },
+    {
+      "id": 2,
+      "matchDateTime": "2024-03-24T19:30:00",
+      "venue": "M. Chinnaswamy Stadium",
+      "season": "IPL 2024",
+      "matchNumber": "Match 2",
+      "team1Id": 3,
+      "team2Id": 4,
+      "status": "COMPLETED",
+      "team1Score": 205,
+      "team1Wickets": 3,
+      "team1Overs": 20.0,
+      "team2Score": 208,
+      "team2Wickets": 5,
+      "team2Overs": 19.4,
+      "matchWinnerId": 4
+    }
+  ],
+  "playerPerformances": [
+    {
+      "playerId": 1,
+      "matchId": 1,
+      "runsScored": 45,
+      "ballsFaced": 32,
+      "fours": 5,
+      "sixes": 2,
+      "strikeRate": 140.62,
+      "wicketsTaken": 0,
+      "runsConceded": 0,
+      "oversBowled": 0.0,
+      "maidens": 0,
+      "economyRate": 0.0,
+      "catches": 1,
+      "runOuts": 0,
+      "stumpings": 0,
+      "playerOfMatch": false
+    },
+    {
+      "playerId": 2,
+      "matchId": 1,
+      "runsScored": 65,
+      "ballsFaced": 45,
+      "fours": 4,
+      "sixes": 3,
+      "strikeRate": 144.44,
+      "wicketsTaken": 0,
+      "runsConceded": 0,
+      "oversBowled": 0.0,
+      "maidens": 0,
+      "economyRate": 0.0,
+      "catches": 2,
+      "runOuts": 1,
+      "stumpings": 1,
+      "playerOfMatch": true
+    },
+    {
+      "playerId": 3,
+      "matchId": 2,
+      "runsScored": 75,
+      "ballsFaced": 50,
+      "fours": 8,
+      "sixes": 2,
+      "strikeRate": 150.0,
+      "wicketsTaken": 0,
+      "runsConceded": 0,
+      "oversBowled": 0.0,
+      "maidens": 0,
+      "economyRate": 0.0,
+      "catches": 1,
+      "runOuts": 0,
+      "stumpings": 0,
+      "playerOfMatch": false
+    },
+    {
+      "playerId": 4,
+      "matchId": 2,
+      "runsScored": 40,
+      "ballsFaced": 15,
+      "fours": 2,
+      "sixes": 4,
+      "strikeRate": 266.67,
+      "wicketsTaken": 2,
+      "runsConceded": 25,
+      "oversBowled": 4.0,
+      "maidens": 0,
+      "economyRate": 6.25,
+      "catches": 1,
+      "runOuts": 0,
+      "stumpings": 0,
+      "playerOfMatch": true
+    }
+  ]
+} 
